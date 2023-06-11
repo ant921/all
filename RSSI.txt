@@ -1,0 +1,99 @@
+#include <Wire.h>           // Include Wire library for I2C communication
+#include <SoftwareSerial.h> // Include SoftwareSerial library for Bluetooth communication
+#include <ArduinoBLE.h>
+
+// Define the Bluetooth module's RX and TX pins
+const int bluetoothRxPin = 10;
+const int bluetoothTxPin = 11;
+
+SoftwareSerial bluetooth(bluetoothRxPin, bluetoothTxPin); // Create a SoftwareSerial object
+
+int measureRSSI(int distance)
+{
+    // Function to measure and return RSSI value for a given distance
+    // Replace with actual implementation or use appropriate library functions
+    return 0;
+}
+
+void searching()
+{
+    int F_units = 4;        // Units to move forward
+    int B_units = -F_units; // Units to move backward
+    int R_units = 45;       // Degrees to rotate right
+
+    int rssiValues[8]; // Array to store RSSI values
+    int maxRssi = 0;
+    int maxIteration = 0;
+
+    for (int i = 0; i < 8; ++i)
+    {
+        // Move forward and store RSSI value
+        int rssi = measureRSSI(F_units);
+        rssiValues[i] = rssi;
+
+        // Move backward
+        measureRSSI(B_units);
+
+        // Rotate right
+        measureRSSI(R_units);
+
+        // Check if current RSSI value is the maximum
+        if (rssi > maxRssi)
+        {
+            maxRssi = rssi;
+            maxIteration = i + 1; // Add 1 to match the iteration number
+        }
+    }
+
+    // Display results
+    Serial.print("Maximum RSSI value: ");
+    Serial.println(maxRssi);
+    Serial.print("Iteration with maximum RSSI value: ");
+    Serial.println(maxIteration);
+
+    // Multiply R_units by maxIteration if needed
+    R_units *= maxIteration;
+
+    // Take a turn and move 10 units forward based on the multiplied R_units
+    // Replace with appropriate code to perform the desired actions
+    Serial.println("Taking a turn and moving 10 units forward...");
+}
+
+void setup()
+{
+    Serial.begin(9600);    // Initialize serial communication for debugging
+    bluetooth.begin(9600); // Initialize Bluetooth communication
+    Serial.println("Bluetooth pairing in progress...");
+}
+
+void loop()
+{
+    if (bluetooth.available())
+    {
+        char receivedChar = bluetooth.read();
+
+        // Check if Bluetooth is paired
+        if (receivedChar == '1')
+        {
+            Serial.println("Bluetooth paired successfully!");
+
+            // Store RSSI value for the base station
+            int baseStation = measureRSSI(0); // Assuming 0 distance for base station
+
+            int home_run = 10; // Units to move forward
+
+            if (baseStation == maxRssi)
+            {
+                Serial.println("You have reached the base station.");
+            }
+            else
+            {
+                searching();
+            }
+        }
+        else
+        {
+            Serial.println("Bluetooth pairing failed. No pair.");
+        }
+    }
+}

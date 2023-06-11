@@ -1,0 +1,37 @@
+// Pin connections for line sensor and motor control
+const int lineSensorPin = A0;
+const int motor1Pin = 3;
+const int motor2Pin = 4;
+
+// Function to stop the vehicle tire motors
+void stopMotors() {
+  digitalWrite(motor1Pin, LOW);
+  digitalWrite(motor2Pin, LOW);
+}
+
+void setup() {
+  // Initialize line sensor pin as input
+  pinMode(lineSensorPin, INPUT);
+  
+  // Initialize motor control pins as output
+  pinMode(motor1Pin, OUTPUT);
+  pinMode(motor2Pin, OUTPUT);
+  
+  // Set initial motor state
+  // You may want to define an initial behavior here, e.g., move forward
+}
+
+void loop() {
+  // Read the state of the line sensor
+  int lineState = analogRead(lineSensorPin);
+  
+  // Check if the line is detected based on a threshold value
+  // Adjust the threshold value according to your line sensor and environment
+  if (lineState > 500) {
+    // Line detected, continue following the line
+    // Add your line-following motor control logic here
+  } else {
+    // Line not detected, stop the motors
+    stopMotors();
+  }
+}
